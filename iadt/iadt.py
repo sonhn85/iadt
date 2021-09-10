@@ -1,3 +1,5 @@
+version = '1.0.0'
+
 import sys
 
 import tkinter as tk
@@ -84,7 +86,7 @@ class FileInfo(ttk.LabelFrame):
 class IADT(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('IADT')
+        self.title('IADT {}'.format(version))
         mainframe = tk.Frame(self)
         self.create_widgets(mainframe)
         mainframe.grid(column=0, row=0, sticky='WNES')
@@ -131,6 +133,7 @@ class IADT(tk.Tk):
             self.button['text'] = 'RUNNING ...'
             text.delete(1.0, tk.END)
             try:
+                print('IADT version {}'.format(version))
                 run(
                     source_file_info=source_file.get_vals(),
                     collateral_file_info=collateral_file.get_vals(),
