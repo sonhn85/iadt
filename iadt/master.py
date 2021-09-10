@@ -79,7 +79,8 @@ def run(source_file_info, collateral_file_info, cic_file_info, branch_info, jica
     )
 
     notify('export data')
-    with pd.ExcelWriter(filedialog.asksaveasfilename(), engine='openpyxl', mode='w') as writer:
+    filename = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=(("Excel workbook", "*.xlsx"), ("All Files", "*.*")))
+    with pd.ExcelWriter(filename, engine='openpyxl', mode='w') as writer:
         print('Master by ref ...')
         master.to_excel(writer, index=False, sheet_name='MASTER')
         print('Master by cif ...')

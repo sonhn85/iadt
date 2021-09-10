@@ -52,7 +52,8 @@ class FileInfo(ttk.LabelFrame):
         entry.grid_configure(padx=3, pady=3, sticky='WNES')
 
         def browse():
-            path.set(filedialog.askopenfilename())
+            filename = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx"), ("Excel files (old)", "*.xls")])
+            path.set(filename)
 
         ttk.Button(self, text='...', command=browse).grid(column=3, row=0, sticky='W')
 
