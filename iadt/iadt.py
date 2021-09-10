@@ -92,22 +92,22 @@ class IADT(tk.Tk):
     def create_widgets(self, frame):
         source_file = FileInfo(frame, ['File nguồn', 'Đường dẫn', 'LN sheet', 'MD,TF sheet'])
         #source_file.set_vals(['/home/sonhn/ocb/data/File_nguon_20210731.xlsx', 'LN001 (7)', '1', 'TF,MD (7)', '0'])
-        source_file.set_vals(['', 'LN001', '1', 'TF,MD', '0'])
+        source_file.set_vals(['', 'LN001', '2', 'TF,MD', '1'])
         source_file.grid(column=0, row=0, sticky='WNE')
 
         collateral_file = FileInfo(frame, ['File TSBĐ', 'Đường dẫn', 'TSBĐ sheet'])
         #collateral_file.set_vals(['/home/sonhn/ocb/data/BCN068_TAISAN_20210802.xls', 'Sheet1', '0'])
-        collateral_file.set_vals(['', 'Sheet1', '0'])
+        collateral_file.set_vals(['', 'Sheet1', '1'])
         collateral_file.grid(column=1, row=0, sticky='WNE')
 
         cic_file = FileInfo(frame, ['File CIC', 'Đường dẫn', 'CIC sheet'])
         #cic_file.set_vals(['/home/sonhn/ocb/data/cic.xlsx', 'Sheet1', '0'])
-        cic_file.set_vals(['', 'Sheet1', '0'])
+        cic_file.set_vals(['', 'Sheet1', '1'])
         cic_file.grid(column=0, row=1, sticky='WNE')
 
         jica_rdf_vnsat_file = FileInfo(frame, ['File Jica/RDF/VNSAT', 'Đường dẫn', 'Sheet'])
         #jica_rdf_vnsat_file.set_vals(['/home/sonhn/ocb/data/jica_rdf_vnsat.xlsx', 'Sheet1', '0'])
-        jica_rdf_vnsat_file.set_vals(['', 'Sheet1', '0'])
+        jica_rdf_vnsat_file.set_vals(['', 'Sheet1', '1'])
         jica_rdf_vnsat_file.grid(column=1, row=1, sticky='WNE')
 
         branch = FilterInfo(frame, ['Lọc', 'Chi nhánh', 'Bỏ PGD'])

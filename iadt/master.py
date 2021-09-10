@@ -16,20 +16,20 @@ def load_params():
     return param_cust_group, param_product, param_coll_type
 
 def load_source_file(source_file_info):
-    data_on_sheet = load_sheet(source_file_info[0], sheet_name=source_file_info[1], header=int(source_file_info[2]))
-    data_off_sheet = load_sheet(source_file_info[0], sheet_name=source_file_info[3], header=int(source_file_info[4]))
+    data_on_sheet = load_sheet(source_file_info[0], sheet_name=source_file_info[1], header=int(source_file_info[2])-1)
+    data_off_sheet = load_sheet(source_file_info[0], sheet_name=source_file_info[3], header=int(source_file_info[4])-1)
     return data_on_sheet, data_off_sheet
 
 def load_collateral(collateral_file_info):
-    collateral = load_sheet(collateral_file_info[0], sheet_name = collateral_file_info[1], header=int(collateral_file_info[2]))
+    collateral = load_sheet(collateral_file_info[0], sheet_name = collateral_file_info[1], header=int(collateral_file_info[2])-1)
     return collateral
 
 def load_cic(cic_file_info):
-    cic = load_sheet(cic_file_info[0], sheet_name = cic_file_info[1], header=int(cic_file_info[2]))
+    cic = load_sheet(cic_file_info[0], sheet_name = cic_file_info[1], header=int(cic_file_info[2])-1)
     return cic
 
 def load_jica_rdf_vnsat(jica_rdf_vnsat_file_info):
-    jica_rdf_vnsat = load_sheet(jica_rdf_vnsat_file_info[0], sheet_name = jica_rdf_vnsat_file_info[1], header=int(jica_rdf_vnsat_file_info[2]))
+    jica_rdf_vnsat = load_sheet(jica_rdf_vnsat_file_info[0], sheet_name = jica_rdf_vnsat_file_info[1], header=int(jica_rdf_vnsat_file_info[2])-1)
     return jica_rdf_vnsat
 
 def notify(msg):
