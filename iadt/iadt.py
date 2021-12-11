@@ -1,4 +1,4 @@
-version = '1.0.1'
+﻿version = '1.0.2'
 
 import sys
 
@@ -158,6 +158,9 @@ class IADT(tk.Tk):
             child.grid_configure(padx=5, pady=5)
 
 root = IADT()
+
+messagebox.showinfo('Advice', 'IADT version is {}, consider checking for update before using for new features and bug fixes.'.format(version))
+
 root.mainloop()
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
