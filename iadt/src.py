@@ -51,6 +51,7 @@ def transform_1(data_on_sheet, data_off_sheet, cic, param_cust_group, param_prod
         'ld_aprv_level',
         'dao_2019',
         't_ocb_outof_area',
+        'nhom no bc nhnn'
     ]
 
     col_names = {
@@ -81,6 +82,7 @@ def transform_1(data_on_sheet, data_off_sheet, cic, param_cust_group, param_prod
         'ld_aprv_level': 'approver',
         'dao_2019': 'ncov',
         't_ocb_outof_area': 'out_of_area',
+        'nhom no bc nhnn': 'class_sbv'
     }
 
     data_on_sheet = data_on_sheet[cols]
@@ -107,6 +109,10 @@ def transform_1(data_on_sheet, data_off_sheet, cic, param_cust_group, param_prod
     data_on_sheet['pd_day'] = data_on_sheet[['pr_day', 'in_day']].max(axis='columns')
     data_on_sheet.drop(['pr_day', 'in_day'], axis='columns', inplace=True)
     data_on_sheet['class_by_day'] = pd.cut(data_on_sheet['pd_day'], bins=(-np.inf, 9, 90, 180, 360, np.inf), labels=(1, 2, 3, 4, 5))
+    cond = ~data_on_sheet['ncov'].isna()
+    #data_on_sheet.loc[cond & (data_on_sheet['pd_day'] == 0), 'class_by_day'] = data_on_sheet.loc[cond & (data_on_sheet['pd_day'] == 0), 'class']
+    data_on_sheet.loc[cond & (data_on_sheet['pd_day'].between(1, 90)), 'class_by_day'] = 4
+    data_on_sheet.loc[cond & (data_on_sheet['pd_day'] > 90), 'class_by_day'] = 5
 
     data_on_sheet['cust_group'] = data_on_sheet['cust_group'].replace(param_cust_group['cust_group'])
     if not data_on_sheet['cust_group'].isin(param_cust_group['cust_group'].values()).all():
@@ -193,15 +199,16 @@ def transform_1(data_on_sheet, data_off_sheet, cic, param_cust_group, param_prod
         print(tmp[tmp])
         raise Exception('Please fill in missing values and retry')
 
-    print('Transforming on balance sheet data ...')
+    print('Transforming off balance sheet data ...')
     data_off_sheet['type'] = 'BL/LC'
 
     data_off_sheet['old_id'] = data_off_sheet['id']
     data_off_sheet['class'] = 1
-
     data_off_sheet['data_date'] = pd.to_datetime(data_off_sheet['data_date'], format='%Y%m%d')
     data_off_sheet['value_date'] = pd.to_datetime(data_off_sheet['value_date'], format='%Y%m%d')
     data_off_sheet['orig_value_date'] = data_off_sheet['value_date']
+    cond = (data_off_sheet['mature_date'] == 0)
+    data_off_sheet.loc[cond, 'mature_date'] = np.nan
     data_off_sheet['mature_date'] = pd.to_datetime(data_off_sheet['mature_date'], format='%Y%m%d')
     data_off_sheet['lc_expiry_date'] = pd.to_datetime(data_off_sheet['lc_expiry_date'], format='%Y%m%d')
     cond = data_off_sheet['lc_expiry_date'].isna()
@@ -222,11 +229,33 @@ def transform_1(data_on_sheet, data_off_sheet, cic, param_cust_group, param_prod
     master = pd.concat([data_on_sheet, data_off_sheet], ignore_index=True)
 
     print('Calculating real class')
+    master['class_by_day'].fillna(1, inplace=True)
     master = master.merge(cic, on='cif', how='left')
-    master['real_class'] = master[['class', 'class_by_day', 'cic_class']].fillna(1).max(axis='columns')
-    tmp = master.groupby('cif', as_index=False).agg({'real_class': np.max})
-    master.drop(['real_class'], axis='columns', inplace=True)
-    master = master.merge(tmp, on='cif', how='left')
+    master['real_class'] = master[['class_by_day', 'class_sbv']].fillna(1).max(axis='columns')
+    #master['real_class'] = master['class_by_day']
+
+    cond = (~master['ncov'].isna()) & (master['pd_day'] > 0)
+    tmp = master.loc[cond, 'cif'].drop_duplicates()
+    cond = master['cif'].isin(tmp)
+    master_ncov_pd = master[cond]
+    tmp = master_ncov_pd.groupby('cif', as_index=False).agg({'real_class': np.max})
+    master_ncov_pd = master_ncov_pd.merge(tmp, on='cif', how='left', suffixes=('_x', None))
+
+    master = master[~cond]
+    cond = ~master['ncov'].isna()
+    master_ncov = master[cond]
+    master_no_ncov = master[~cond]
+    tmp = master_ncov.groupby('cif', as_index=False).agg({'real_class': np.max})
+    master_ncov = master_ncov.merge(tmp, on='cif', how='left', suffixes=('_x', None))
+    tmp = master_no_ncov.groupby('cif', as_index=False).agg({'real_class': np.max})
+    master_no_ncov = master_no_ncov.merge(tmp, on='cif', how='left', suffixes=('_x', None))
+    master = pd.concat([master_ncov_pd, master_ncov, master_no_ncov], ignore_index=True)
+
+    cond = ~master['ncov'].isna()
+    master['real_class_ncov'] = master['real_class']
+    master['real_class_no_ncov'] = master['real_class']
+    master.loc[cond, 'real_class_no_ncov'] = np.nan
+    master.loc[~cond, 'real_class_ncov'] = np.nan
 
     master = master[[
         'data_date',
@@ -255,6 +284,9 @@ def transform_1(data_on_sheet, data_off_sheet, cic, param_cust_group, param_prod
         'class_by_day',
         'cic_class',
         'real_class',
+        'real_class_ncov',
+        'real_class_no_ncov',
+        'class_sbv',
         'manual_class',
         'interest',
         'interest_spread',
