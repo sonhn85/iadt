@@ -14,6 +14,9 @@ def transform_4(master, coll_val_dist):
         'amt_eq': np.sum,
         'class': np.max,
         'real_class': np.max,
+        'real_class_ncov': np.max,
+        'real_class_no_ncov': np.max,
+        'class_sbv': np.max
     })
 
     tmp = master[groupby + ['limit']].drop_duplicates().groupby(groupby, as_index=False).count()
@@ -37,6 +40,9 @@ def transform_4(master, coll_val_dist):
         'amt_eq',
         'class',
         'real_class',
+        'real_class_ncov',
+        'real_class_no_ncov',
+        'class_sbv'
     ]
 
     master_by_cif[cols]
